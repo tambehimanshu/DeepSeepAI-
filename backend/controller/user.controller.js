@@ -1,5 +1,9 @@
 import { User } from "../model/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import config from "../../config.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const signup = async (req,res)=>{
   const { firstName, lastName, email, password } = req.body;
@@ -31,11 +35,18 @@ export const login = async(req,res)=>{
     const {email,password} = req.body;
     try {
         const user = await User.findOne({ email: email })
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!user || !isPasswordValid) {
-            return res.status(401).json({ error: "Invalid email or password" });
+        
+        if (!user ) {
+            return res.status(403).json({ error: "Invalid credential" });
         }
-        return res.status(200).json({ message: "User login successful", user: { firstName: user.firstName, lastName: user.lastName, email: user.email } });
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(403).json({ error: "Invalid password" });
+        }
+        //jwt token generation
+        const token = jwt.sign({userId: user._id},config.jwtSecret, { expiresIn: "1d" });
+        res.cookie("token", token );
+        return res.status(201).json({ message: "User login successful", user: { firstName: user.firstName, lastName: user.lastName, email: user.email },token });
     } catch (error) {
         console.log("Error during user login:", error);
         return res.status(500).json({ error: "Internal server error" });
