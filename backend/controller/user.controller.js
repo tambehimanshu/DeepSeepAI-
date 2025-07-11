@@ -46,6 +46,13 @@ export const login = async(req,res)=>{
         //jwt token generation
         const token = jwt.sign({userId: user._id},config.jwtSecret, { expiresIn: "1d" });
         res.cookie("token", token );
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", 
+            sameSite: "Strict",
+            expires :new Date(Date.now()+24 * 60 * 60 * 1000)
+        };
+        res
         return res.status(201).json({ message: "User login successful", user: { firstName: user.firstName, lastName: user.lastName, email: user.email },token });
     } catch (error) {
         console.log("Error during user login:", error);
@@ -54,6 +61,12 @@ export const login = async(req,res)=>{
 }
 
 export const logout = (req,res)=>{
-    console.log("User logout request received");
-    res.send("User logged out successfully");
+    try{
+     res.clearCookie("token")
+     return res.status(200).json({ message: "User logout successful" });
+    }
+    catch(error){
+        console.log("Error during user logout:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 }
