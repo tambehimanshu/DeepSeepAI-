@@ -1,6 +1,7 @@
 import React from 'react'
 import { LogOut, X } from 'lucide-react'
 
+
 function Sidebar() {
   return (
 <>
@@ -30,7 +31,7 @@ function Sidebar() {
                 <img  className='rounded-full    w-8 h-8' src="" alt="" />
                 <span className='text-gray-300'>My Profile</span>
             </div>
-            <button className=' flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:bg-gray-700 duration-300 transition'><LogOut className=''/> Logout</button>
+            <button className=' flex items-center gap-2 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700 duration-300 transition'><LogOut className=''/> Logout</button>
         </div>
     </div>
 </div>
