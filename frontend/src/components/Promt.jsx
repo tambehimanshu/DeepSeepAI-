@@ -1,17 +1,66 @@
+import axios from "axios";
 import { ArrowUp, Bot, Globe, Paperclip, Search } from "lucide-react";
+
 
 import React,{useState} from "react";
 
 function Promt() {
     const [inputValue, setInputValue] =useState(""); // for input field
     const[typeMessage, setTypeMessage] =useState(""); // once we hit the enter btn  /ArrowUp then the input must me push to typeMessage
+
+    const [promt,setPromt] = useState([]); // for storing the messages
+    const [loading, setLoading] = useState(false); // for loading state
+
+    console.log(promt);
  
-     const handleSend=()=>{
+     const handleSend= async()=>{
         const trimmed = inputValue.trim();
         if(!trimmed) return; // if input is empty, do nothing
-        setTypeMessage(trimmed); // set the message to typeMessage
+        
         setInputValue(""); // clear the input field
-      
+        setTypeMessage(trimmed); // set the message to typeMessage
+        setLoading(true); 
+    
+        try{
+          const token = localStorage.getItem("token");
+          if (!token) {
+      throw new Error("🔒 No authentication token found. Please log in again.");
+    }
+         const {data}=  await axios.post("http://localhost:3323/api/v1/deepseekai/promt",{content:trimmed},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+          )        
+          setPromt((prev) => [...prev, { role:"user",content: trimmed, type: "user" },
+            {role: "assistant",content: data.reply}
+          ]); // add user message to promt
+
+        }
+        catch (error) {
+ console.error("API Error:", error);
+
+    let errorMessage = "❌ Something went wrong with the AI response.";
+
+    if (error.response?.status === 401) {
+      errorMessage = "❌ Unauthorized. Please log in again.";
+    } else if (error.message) {
+      errorMessage = `❌ ${error.message}`;
+    }
+
+    setPromt((prev) => [
+      ...prev,
+      { role: "user", content: trimmed },
+      { role: "assistant", content: errorMessage },
+    ]);
+  } 
+
+        finally{
+            setLoading(false); // reset loading state
+            setTypeMessage("")
+        }
  
 
 
@@ -33,12 +82,21 @@ function Promt() {
 
       {/* promt  */}
       <div className='flex-1 max-w-4xl w-full overflow-y-auto mt-6 mb-4 space-y-4 max-h-[60vh] px-1' >
-        {typeMessage && (
-            <div className='w-full flex items-end justify-end'>
-                <div className='text-white text-lg bg-blue-700 self-end max-w-[75%] rounded-xl px-4 py-2'>{typeMessage}</div>
-            </div>
-        )}
-      
+        {promt.map((msg, idx) => (
+  <div
+    key={idx}
+    className={`w-full flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+  >
+    <div
+      className={`text-white text-lg ${
+        msg.role === "user" ? "bg-blue-700" : "bg-gray-700"
+      } max-w-[75%] rounded-xl px-4 py-2`}
+    >
+      {msg.content}
+    </div>
+  </div>
+))}
+
       </div>
       {/* input box */}
       <div className='w-full max-w-4xl relative mt-auto'>
