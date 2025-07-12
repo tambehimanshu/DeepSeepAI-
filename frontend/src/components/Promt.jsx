@@ -35,7 +35,7 @@ function Promt() {
       <div className='flex-1 max-w-4xl w-full overflow-y-auto mt-6 mb-4 space-y-4 max-h-[60vh] px-1' >
         {typeMessage && (
             <div className='w-full flex items-end justify-end'>
-                <div className='text-white text-lg bg-blue-500 self-end max-w-[75%] rounded-xl px-4 py-2'>{typeMessage}</div>
+                <div className='text-white text-lg bg-blue-700 self-end max-w-[75%] rounded-xl px-4 py-2'>{typeMessage}</div>
             </div>
         )}
       
