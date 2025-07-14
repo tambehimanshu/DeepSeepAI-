@@ -8,12 +8,12 @@ const openai = new OpenAI({
 });
 
 export const sendPromt = async (req, res) => {
-  const { content } = req.body;
+  const {content, userId: bodyUserId}= req.body;
    const userId = req.userId || bodyUserId;
 
-//   if (!userId) {
-//     return res.status(400).json({ error: "userId is required" });
-//   }
+ if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
 
   if (!content || content.trim() === "") {
     return res.status(400).json({ error: "Promt content is required" });
