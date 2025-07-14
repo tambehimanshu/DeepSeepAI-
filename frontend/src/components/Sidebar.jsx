@@ -7,32 +7,43 @@ import { useAuth } from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Sidebar() { const user=JSON.parse(localStorage.getItem("user"));
+function Sidebar() { 
+  const user=JSON.parse(localStorage.getItem("user"));
  // console.log(user);
    const [, setAuthUser] = useAuth();
   const navigate = useNavigate();
 
-    const handleLogout = async () => {
-    try {
-      const { data } = await axios.get(
-        "http://localhost:3323/api/v1/user/logout",
-        {
-          withCredentials: true,
-        }
-      );
+   const handleLogout = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user")); // 👈 Get the user before removing it
 
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-     
+    const { data } = await axios.get(
+      "http://localhost:3323/api/v1/user/logout",
+      {
+        withCredentials: true,
+      }
+    );
 
-      alert(data.message);
+    // ✅ Remove prompt history specific to this user
+    if (user?._id) {
+      console.log("Removing prompt history for user:", user?._id);
 
-      setAuthUser(null);
-      navigate("/login");
-    } catch (error) {
-      alert(error?.response?.data?.errors || "Logout Failed");
+      localStorage.removeItem(`promtHistory_${user._id}`);
     }
-  };
+
+    // ✅ Clear other stored data
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    alert(data.message);
+
+    setAuthUser(null);
+    navigate("/login");
+  } catch (error) {
+    alert(error?.response?.data?.errors || "Logout Failed");
+  }
+};
+
   
 
   return (

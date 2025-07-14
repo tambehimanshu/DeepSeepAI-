@@ -17,24 +17,30 @@ function Promt() {
   const promtendRef = useRef(null); // for scrolling to the end of the promt messages
 
 
-  useEffect(() => {
-    const storedPromt = localStorage.getItem("promtHistory");
-    if (storedPromt) {
-      setPromt(JSON.parse(storedPromt));
+   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      const storedPromt = localStorage.getItem(`promtHistory_${user._id}`);
+      if (storedPromt) {
+        setPromt(JSON.parse(storedPromt));
+      }
     }
   }, []);
 
 
   useEffect(()=>{
-    localStorage.setItem("promtHistory", JSON.stringify(promt));
-  },[promt])
+     const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      localStorage.setItem(`promtHistory_${user._id}`, JSON.stringify(promt));
+    }
+  }, [promt]);
 
   
 
   useEffect(() => {
     promtendRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [promt, loading]); // whenever promt changes, this effect will run
-  console.log(promt);
+  
 
   const handleSend = async () => {
     const trimmed = inputValue.trim();
@@ -46,11 +52,7 @@ function Promt() {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error(
-          "🔒 No authentication token found. Please log in again."
-        );
-      }
+      
       const { data } = await axios.post(
         "http://localhost:3323/api/v1/deepseekai/promt",
         { content: trimmed },
@@ -63,7 +65,7 @@ function Promt() {
       );
       setPromt((prev) => [
         ...prev,
-        { role: "user", content: trimmed, type: "user" },
+        { role: "user", content: trimmed },
         { role: "assistant", content: data.reply },
       ]); // add user message to promt
     } catch (error) {
@@ -84,7 +86,7 @@ function Promt() {
       ]);
     } finally {
       setLoading(false); // reset loading state
-      setTypeMessage("");
+      setTypeMessage(null);
     }
   };
   const handleKeyDown = (e) => {
@@ -145,7 +147,7 @@ function Promt() {
                 </ReactMarkdown>
               </div>
             ) : (
-              <div className="w-[30%] bg-blue-600 text-white rounded-xl px-4 py-3 text-sm whitespace-pre-wrap self-start">
+              <div className="w-[50%] bg-blue-600 text-white rounded-xl px-4 py-3 text-sm whitespace-pre-wrap self-start">
                 {msg.content}
               </div>
             )}

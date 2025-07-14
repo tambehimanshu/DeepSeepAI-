@@ -49,7 +49,7 @@ localStorage.setItem("token", data.token);
 setAuthUser(data.token);
 
 //console.log(setAuthUser);
-navigate('/login');
+navigate('/');
         
     }
     catch (error) {
@@ -98,13 +98,13 @@ navigate('/login');
         {/* terms and conditions */}
         <p className='text-xs text-gray-400 mt-4 mb-6'>By signing up or logging in, you consent to DeepSeek's <a className='underline' href="#">terms of use</a> and <a className='underline' href="#">Privacy Policy</a></p>
 
-        <button onClick={handleSingup} disabled={loading} className='w-full bg-[#7a6ff6] hover:bg-[#6c61a6] text-white px-4 py-2 rounded-md transition disable:opacity-50 '>
-            {loading ? 'Signing up...' : 'Sign up'}
+        <button onClick={handleSingup} disabled={loading} className='w-full bg-[#7a6ff6] hover:bg-[#6c61a6] text-white px-4 py-2 rounded-md transition disable:opacity-50 '> 
+            {loading ? 'Signing up...' : 'Login'}
         </button>
 
         <div className=' flex justify-between mt-4 text-sm'>
             <a className='text-[#7a6ff6]  hover:underline' href="">Haven't account</a>
-            <Link to={'/signup'} className='text-[#7a6ff6]  hover:underline'>Login</Link>
+            <Link to={'/signup'} className='text-[#7a6ff6]  hover:underline'>singup</Link>
         </div>
          </div>
 
