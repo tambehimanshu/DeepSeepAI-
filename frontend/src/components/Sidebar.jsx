@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Sidebar() { 
+function Sidebar({isMobile = false, onclose}) { 
   const user=JSON.parse(localStorage.getItem("user"));
  // console.log(user);
    const [, setAuthUser] = useAuth();
@@ -48,11 +48,16 @@ function Sidebar() {
 
   return (
 <>
-<div className=' h-full flex flex-col  bg-[#232327] text-white p-4'>
+<div className={`hidden md:flex h-full w-full  flex-col  bg-[#232327] text-white p-4 ${isMobile ? 'top-0 left-0 z-50 w-64 md:hidden':'hidden md:flex'}`}> 
 
     {/* header */}
     <div className=' p-4 border-b border-gray-700 flex items-center justify-between '> 
         <div className='text-xl font-bold text-white'>Deepseek</div>
+        { isMobile &&(
+          <button onClick={onclose}>
+            <X className='text-gray-300 w-6 h-6'/>
+          </button>
+        )}
 
         <button><X className='text-gray-300 w-6 h-6'/></button>
     </div>
@@ -71,7 +76,7 @@ function Sidebar() {
     <div className='p-4 border-t border-gray-700 '>
         <div className='flex flex-col gap-3'>
             <div className=' flex items-center gap-2 cursor-pointer '>
-                <img  className='rounded-full    w-8 h-8' src="" alt="" />
+                <img  className='rounded-full    w-8 h-8' src="ec" alt="ds" />
                 <span className='text-gray-300'>{user? user.firstName:"My Profile"}</span>
             </div>
             <button className=' flex items-center gap-2 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700 duration-300 transition' onClick={handleLogout}><LogOut className=''/> Logout</button>
